@@ -41,4 +41,13 @@ vhost __defaultVhost__ {
         enabled     on;
         mount       [vhost]/[app]/[stream].flv;
     }
+    
+    # RTC configuration - required when rtc_server is enabled
+    rtc {
+        enabled     on;
+        # Convert RTMP to WebRTC
+        rtmp_to_rtc on;
+        # Convert WebRTC to RTMP
+        rtc_to_rtmp on;
+    }
 }
