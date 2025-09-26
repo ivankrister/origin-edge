@@ -1,0 +1,25 @@
+# Environment file with sensitive data
+.env
+
+# Generated configuration
+conf/edge.conf
+
+# Logs directory
+logs/
+
+# Docker volumes
+volumes/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Backup files
+*.bak
+*~

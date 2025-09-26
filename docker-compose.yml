@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # Origin Server - The main streaming server
+  srs-origin:
+    image: ossrs/srs:5
+    container_name: srs-origin
+    ports:
+      - "19350:19350"  # RTMP port for origin
+      - "1985:1985"    # HTTP API port
+      - "8080:8080"    # HTTP server port
+      - "8000:8000/udp"  # WebRTC UDP port (if needed)
+    volumes:
+      - ./conf/origin.conf:/usr/local/srs/conf/origin.conf
+      - ./logs:/usr/local/srs/objs
+    command: ./objs/srs -c conf/origin.conf
+    networks:
+      - srs-network
+    restart: unless-stopped
+    environment:
+      - CANDIDATE=${CANDIDATE:-192.168.1.100}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1985/api/v1/versions"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Edge Server - CDN cache server
+  srs-edge:
+    image: ossrs/srs:5
+    container_name: srs-edge
+    ports:
+      - "1935:1935"    # RTMP port for clients
+      - "1986:1985"    # HTTP API port (different from origin)
+      - "8081:8080"    # HTTP server port (different from origin)
+      - "8001:8000/udp"  # WebRTC UDP port (if needed)
+    volumes:
+      - ./conf/edge.conf:/usr/local/srs/conf/edge.conf
+      - ./logs:/usr/local/srs/objs
+    command: ./objs/srs -c conf/edge.conf
+    depends_on:
+      - srs-origin
+    networks:
+      - srs-network
+    restart: unless-stopped
+    environment:
+      - CANDIDATE=${CANDIDATE:-192.168.1.100}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1985/api/v1/versions"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  srs-network:
+    driver: bridge

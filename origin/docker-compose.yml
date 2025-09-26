@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  srs-origin:
+    image: ossrs/srs:5
+    container_name: srs-origin
+    ports:
+      - "1935:1935"    # RTMP port for publishers
+      - "1985:1985"    # HTTP API port
+      - "8080:8080"    # HTTP server port for HLS/FLV
+      - "8000:8000/udp"  # WebRTC UDP port
+    volumes:
+      - ./conf/origin.conf:/usr/local/srs/conf/origin.conf
+      - ./logs:/usr/local/srs/objs
+    command: ./objs/srs -c conf/origin.conf
+    restart: unless-stopped
+    environment:
+      - CANDIDATE=${CANDIDATE:-YOUR_ORIGIN_SERVER_IP}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1985/api/v1/versions"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  default:
+    driver: bridge

@@ -1,0 +1,21 @@
+# Edge Server Dockerfile
+FROM ossrs/srs:5
+
+LABEL maintainer="SRS Edge Server"
+LABEL description="SRS Edge Server for CDN streaming"
+
+# Copy configuration
+COPY conf/edge.conf /usr/local/srs/conf/edge.conf
+
+# Create logs directory
+RUN mkdir -p /usr/local/srs/objs
+
+# Expose ports
+EXPOSE 1935 1985 8080 8000/udp
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+    CMD curl -f http://localhost:1985/api/v1/versions || exit 1
+
+# Start SRS with edge configuration
+CMD ["./objs/srs", "-c", "conf/edge.conf"]

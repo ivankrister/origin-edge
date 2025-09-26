@@ -1,0 +1,82 @@
+# Edge Server Configuration
+# This server caches streams from the origin server for CDN distribution
+
+listen              1935;
+pid                 objs/edge.pid;
+srs_log_file        ./objs/edge.log;
+srs_log_level       info;
+
+# HTTP API configuration
+http_api {
+    enabled         on;
+    listen          1985;
+}
+
+# HTTP server for web players
+http_server {
+    enabled         on;
+    listen          8080;
+    dir             ./objs/nginx/html;
+}
+
+# Statistics configuration
+stats {
+    network         0;
+}
+
+# Default vhost configuration for edge mode
+vhost __defaultVhost__ {
+    # Cluster configuration - this makes it an edge server
+    cluster {
+        # Set mode to remote to make this an edge server
+        mode            remote;
+        
+        # Origin servers to fetch streams from
+        # You can specify multiple origin servers for failover
+        # Format: <server_name|ip>[:port]
+        # This will be replaced by environment variable
+        origin          ORIGIN_SERVER_PLACEHOLDER;
+        
+        # Token traverse mode - whether to forward auth to origin
+        # Set to on if you want origin server to handle authentication
+        token_traverse  off;
+        
+        # Transform vhost - specify vhost on origin server
+        # Use [vhost] to use the same vhost name as the edge
+        vhost           [vhost];
+        
+        # Debug info when connecting to SRS origin
+        debug_srs_upnode    on;
+    }
+    
+    # Enable HTTP-FLV live streaming
+    http_remux {
+        enabled     on;
+        mount       [vhost]/[app]/[stream].flv;
+    }
+    
+    # Note: HLS should NOT be enabled on edge servers
+    # HLS delivery should use HTTP cache servers like Nginx or Squid
+    # to cache the HLS files from the origin server
+    hls {
+        enabled         off;
+    }
+    
+    # DVR should be disabled on edge servers
+    dvr {
+        enabled         off;
+    }
+    
+    # Transcode should be disabled on edge servers
+    transcode {
+        enabled     off;
+    }
+}
+
+# WebRTC configuration
+rtc_server {
+    enabled on;
+    listen 8000;
+    # @see https://ossrs.io/lts/en-us/docs/v6/doc/webrtc#config-candidate
+    candidate $CANDIDATE;
+}
