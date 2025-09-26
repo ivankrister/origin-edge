@@ -1,83 +1,44 @@
-# Edge Server Configuration
-# This server caches streams from the origin server for CDN distribution
+# Simple Edge Server Configuration
+# Based on SRS official documentation example
 
 listen              1935;
 max_connections     1000;
-# For docker, use console logging (docker logs command)
 srs_log_tank        console;
 daemon              off;
 
-# HTTP API configuration
+# HTTP API
 http_api {
     enabled         on;
     listen          1985;
 }
 
-# HTTP server for web players
+# HTTP server
 http_server {
     enabled         on;
     listen          8080;
     dir             ./objs/nginx/html;
 }
 
-# Statistics configuration
-stats {
-    network         0;
+# WebRTC server
+rtc_server {
+    enabled         on;
+    listen          8000;
+    candidate       CANDIDATE_PLACEHOLDER;
 }
 
-# Default vhost configuration for edge mode
+# Default vhost for edge mode
 vhost __defaultVhost__ {
-    # Cluster configuration - this makes it an edge server
     cluster {
-        # Set mode to remote to make this an edge server
         mode            remote;
-        
-        # Origin servers to fetch streams from
-        # You can specify multiple origin servers for failover
-        # Format: <server_name|ip>[:port]
-        # This will be replaced by environment variable
         origin          ORIGIN_SERVER_PLACEHOLDER;
-        
-        # Token traverse mode - whether to forward auth to origin
-        # Set to on if you want origin server to handle authentication
         token_traverse  off;
-        
-        # Transform vhost - specify vhost on origin server
-        # Use [vhost] to use the same vhost name as the edge
         vhost           [vhost];
-        
-        # Debug info when connecting to SRS origin
-        debug_srs_upnode    on;
+        debug_srs_upnode on;
     }
     
-    # Enable HTTP-FLV live streaming
+    # Enable HTTP-FLV for edge
     http_remux {
         enabled     on;
         mount       [vhost]/[app]/[stream].flv;
     }
-    
-    # Note: HLS should NOT be enabled on edge servers
-    # HLS delivery should use HTTP cache servers like Nginx or Squid
-    # to cache the HLS files from the origin server
-    hls {
-        enabled         off;
-    }
-    
-    # DVR should be disabled on edge servers
-    dvr {
-        enabled         off;
-    }
-    
-    # Transcode should be disabled on edge servers
-    transcode {
-        enabled     off;
-    }
-}
-
-# WebRTC configuration
-rtc_server {
-    enabled on;
-    listen 8000;
-    # @see https://ossrs.io/lts/en-us/docs/v6/doc/webrtc#config-candidate
-    candidate $CANDIDATE;
 }
