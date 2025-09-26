@@ -7,7 +7,7 @@ set -e
 echo "🛑 Stopping SRS Origin and Edge Servers..."
 
 # Stop and remove containers
-docker-compose down
+docker compose down
 
 echo "✅ Services stopped successfully!"
 

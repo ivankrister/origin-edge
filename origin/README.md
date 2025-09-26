@@ -53,7 +53,7 @@ Edit `conf/origin.conf` to customize:
 
 - Health check: `curl http://localhost:1985/api/v1/versions`
 - Stream stats: `curl http://localhost:1985/api/v1/streams`
-- Logs: `docker-compose logs -f`
+- Logs: `docker compose logs -f`
 
 ## Production Notes
 

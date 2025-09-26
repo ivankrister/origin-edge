@@ -63,7 +63,7 @@ ORIGIN_SERVER="192.168.1.100:1935 192.168.1.101:1935 192.168.1.102:1935"
 
 - Health check: `curl http://localhost:1985/api/v1/versions`
 - Stream stats: `curl http://localhost:1985/api/v1/streams`
-- Logs: `docker-compose logs -f`
+- Logs: `docker compose logs -f`
 
 ## Deployment Notes
 

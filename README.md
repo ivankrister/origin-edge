@@ -12,13 +12,13 @@ This project sets up SRS (Simple Realtime Server) with separate deployable Origi
 ```
 ossrs/
 ├── origin/                 # Origin Server (deploy on main server)
-│   ├── docker-compose.yml
+│   ├── docker compose.yml
 │   ├── Dockerfile
 │   ├── conf/origin.conf
 │   ├── start.sh
 │   └── README.md
 ├── edge/                   # Edge Server (deploy on CDN locations)
-│   ├── docker-compose.yml
+│   ├── docker compose.yml
 │   ├── Dockerfile
 │   ├── conf/edge.conf.template
 │   ├── start.sh
@@ -163,11 +163,11 @@ curl http://EDGE_SERVER_IP:1985/api/v1/streams
 ```bash
 # On origin server
 cd origin/
-docker-compose logs -f
+docker compose logs -f
 
 # On edge server
 cd edge/
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ## Troubleshooting
