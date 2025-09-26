@@ -2,23 +2,20 @@ version: '3.8'
 
 services:
   srs-edge:
-    image: ossrs/srs:5
+    build: .
     container_name: srs-edge
     ports:
       - "1935:1935"    # RTMP port for clients
       - "1985:1985"    # HTTP API port
       - "8080:8080"    # HTTP server port
       - "8000:8000/udp"  # WebRTC UDP port
-    volumes:
-      - ./conf/edge.conf:/usr/local/srs/conf/edge.conf
-      - ./logs:/usr/local/srs/objs
-    command: ./objs/srs -c conf/edge.conf
+    volumes: []
     restart: unless-stopped
     environment:
       - CANDIDATE=${CANDIDATE:-YOUR_EDGE_SERVER_IP}
       - ORIGIN_SERVER=${ORIGIN_SERVER:-YOUR_ORIGIN_SERVER_IP:1935}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:1985/api/v1/versions"]
+      test: ["CMD", "pgrep", "srs"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -2,9 +2,10 @@
 # This server caches streams from the origin server for CDN distribution
 
 listen              1935;
-pid                 objs/edge.pid;
-srs_log_file        ./objs/edge.log;
-srs_log_level       info;
+max_connections     1000;
+# For docker, use console logging (docker logs command)
+srs_log_tank        console;
+daemon              off;
 
 # HTTP API configuration
 http_api {

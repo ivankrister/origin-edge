@@ -11,13 +11,12 @@ services:
       - "8000:8000/udp"  # WebRTC UDP port
     volumes:
       - ./conf/origin.conf:/usr/local/srs/conf/origin.conf
-      - ./logs:/usr/local/srs/objs
     command: ./objs/srs -c conf/origin.conf
     restart: unless-stopped
     environment:
       - CANDIDATE=${CANDIDATE:-YOUR_ORIGIN_SERVER_IP}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:1985/api/v1/versions"]
+      test: ["CMD", "pgrep", "srs"]
       interval: 30s
       timeout: 10s
       retries: 3
